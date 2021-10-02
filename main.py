@@ -31,6 +31,8 @@ command_dict = {
     'insert': DB.insert_data,
     'clear': clear,
     '?': print_command_list,
+
+    "view": DB.viewing_data
 }
 
 
