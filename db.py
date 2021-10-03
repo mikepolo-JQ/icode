@@ -45,7 +45,11 @@ sql_queries = {
                        "teacher t on s.id = t.subject_id group by s.id order by s.id;",
 
     "viewing_teacher": "select t.id, t.full_name, s.name from teacher t left join subject s on s.id = t.subject_id"
-                       " order by t.id;"
+                       " order by t.id;",
+
+    "viewing_subject_groups": "select g.id, g.name, array_to_string(array_agg(s.name), ', ') from groups g left join"
+                              " subject_groups sg on g.id = sg.group_id left join subject s on sg.subject_id = s.id"
+                              " group by g.name, g.id;"
 }
 
 
@@ -209,7 +213,7 @@ class DB:
                 "field_names": ["id", "Student Full Name", "Group"]
             },
             "groups": {
-                "title": "LIST OF GROUP",
+                "title": "LIST OF GROUPS",
                 "field_names": ["id", "Group", "Count of Students"]
             },
             "subject": {
@@ -219,6 +223,10 @@ class DB:
             "teacher": {
                 "title": "LIST OF TEACHERS",
                 "field_names": ["id", "Teacher Full Name", "Subject"],
+            },
+            "subject_groups": {
+                "title": "SUBJECT OF GROUPS",
+                "field_names": ["id", "Group", "Subjects"],
             },
 
         }

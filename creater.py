@@ -77,25 +77,28 @@ import json
 #     json.dump(teacher_file, file, indent=4)
 
 
-with open('groups.json') as file:
-    groups_data = json.load(file)
-
-groups_file = []
-
+# with open('groups.json') as file:
+#     groups_data = json.load(file)
 
 i = 0
+groups_file = []
+k = 0
+idk = 0
+for group_id in range(25):
+    for subject_id in range(5):
+        groups_file += [{
+            "id": idk + 1,
+            "group": group_id + 1,
+            "subject": subject_id + 1 + k,
+        }]
+        idk += 1
 
-for group in groups_data:
-    i += 1
-
-    groups_file += [group]
-
-    if i >= 25:
-        break
-
+    k += 5
+    if k >= 20:
+        k = 0
 
 # with open("students2.json", 'w') as file:
 #     json.dump(student_file, file, indent=4)
 
-with open("groups.json", 'w') as file:
+with open("subject_groups.json", 'w') as file:
     json.dump(groups_file, file, indent=4)
