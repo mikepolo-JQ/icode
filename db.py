@@ -260,6 +260,8 @@ class DB:
         hendler_adding_dict = {
             "student": utils.student_adding,
             "groups": utils.group_adding,
+            "subject": utils.subject_adding,
+            "teacher": utils.teacher_adding
         }
 
         while True:
