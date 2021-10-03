@@ -192,7 +192,9 @@ class DB:
         print(f"Insert {table_name} successfully! Total time: {finish - start:.2f}")
 
     def viewing_data(self):
-        print("Enter the name of the table, please")
+        print("\nEnter the name of the table, please\n")
+        print("student\t\tLIST OF STUDENTS\ngroups\t\tLIST OF GROUPS\nsubject\t\tLIST OF SUBJECTS\n"
+              "teacher\t\tLIST OF TEACHERS\nsubject_groups\tSUBJECT OF GROUPS")
 
         while True:
             table_name = input("\nicode/view >>> ").lower()
