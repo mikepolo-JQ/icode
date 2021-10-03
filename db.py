@@ -1,6 +1,7 @@
 import json
 import time
 from typing import Union, Tuple
+from prettytable import PrettyTable
 
 import psycopg2
 import conf as settings
@@ -33,7 +34,22 @@ sql_queries = {
                              "id serial primary key,"
                              "subject_id serial references subject(id),"
                              "group_id serial references groups(id)"
-                             ");"
+                             ");",
+
+    "viewing_student": "select s.id as id, s.full_name, g.name from student s left join groups g on g.id = s.group_id;",
+
+    "viewing_groups": "select g.id, g.name, count(s.id) from groups g left join student s on g.id = s.group_id group "
+                      "by g.id order by g.id",
+
+    "viewing_subject": "select s.id, s.name, array_to_string(array_agg(t.full_name), ', ') from subject s left join "
+                       "teacher t on s.id = t.subject_id group by s.id order by s.id;",
+
+    "viewing_teacher": "select t.id, t.full_name, s.name from teacher t left join subject s on s.id = t.subject_id"
+                       " order by t.id;",
+
+    "viewing_subject_groups": "select g.id, g.name, array_to_string(array_agg(s.name), ', ') from groups g left join"
+                              " subject_groups sg on g.id = sg.group_id left join subject s on sg.subject_id = s.id"
+                              " group by g.name, g.id;"
 }
 
 
@@ -115,14 +131,16 @@ class DB:
 
         self.insert_from_json(table_name="subject")
         self.insert_from_json(table_name="teacher")
+
+        self.insert_from_json(table_name="subject_groups")
         return True
 
     # INSERT data from JSON FILE to the DataBase
-    def insert_from_json(self, table_name) -> None:
+    def insert_from_json(self, table_name: str) -> None:
 
-        insert_settings_data_dict = {
+        insert_settings_dict = {
             "student": {
-                "file_name": "students2.json",
+                "file_name": "students.json",
                 "file_field_list": ["name", "group"],
                 "value_string": "('{}', {})",
                 "db_field_string": "student(full_name, group_id)"
@@ -145,11 +163,17 @@ class DB:
                 "value_string": "({}, '{}', {})",
                 "db_field_string": "teacher(id, full_name, subject_id)"
             },
+            "subject_groups": {
+                "file_name": "subject_groups.json",
+                "file_field_list": ["id", "subject", "group"],
+                "value_string": "({}, {}, {})",
+                "db_field_string": "subject_groups(id, subject_id, group_id)"
+            },
         }
 
-        conf = insert_settings_data_dict[table_name]
+        conf = insert_settings_dict[table_name]
 
-        with open(conf["file_name"]) as file:
+        with open(f"jsons/{conf['file_name']}") as file:
             data = json.load(file)
 
         values = str()
@@ -166,3 +190,62 @@ class DB:
 
         finish = time.time()
         print(f"Insert {table_name} successfully! Total time: {finish - start:.2f}")
+
+    def viewing_data(self):
+        print("\nEnter the name of the table, please\n")
+        print("student\t\tLIST OF STUDENTS\ngroups\t\tLIST OF GROUPS\nsubject\t\tLIST OF SUBJECTS\n"
+              "teacher\t\tLIST OF TEACHERS\nsubject_groups\tSUBJECT OF GROUPS")
+
+        while True:
+            table_name = input("\nicode/view >>> ").lower()
+            if table_name in self.tables_names:
+                self._view(table_name)
+            elif table_name == "end":
+                break
+            else:
+                print(f"Table with name \"{table_name}\" isn't found.\nTry again or enter \"end\" for exit")
+        return True
+
+    # VIEWING RECORDS
+    def _view(self, table_name: str):
+
+        viewing_settings_dict = {
+            "student": {
+                "title": "LIST OF STUDENTS",
+                "field_names": ["id", "Student Full Name", "Group"]
+            },
+            "groups": {
+                "title": "LIST OF GROUPS",
+                "field_names": ["id", "Group", "Count of Students"]
+            },
+            "subject": {
+                "title": "LIST OF SUBJECTS",
+                "field_names": ["id", "Subject", "Teachers"]
+            },
+            "teacher": {
+                "title": "LIST OF TEACHERS",
+                "field_names": ["id", "Teacher Full Name", "Subject"],
+            },
+            "subject_groups": {
+                "title": "SUBJECT OF GROUPS",
+                "field_names": ["id", "Group", "Subjects"],
+            },
+
+        }
+
+        sql_query = sql_queries[f'viewing_{table_name}']
+        conf = viewing_settings_dict[table_name]
+
+        rows, tot_time = self.__fetchall(sql_query)
+
+        table = PrettyTable()
+
+        table.title = conf["title"]
+        table.field_names = conf["field_names"]
+
+        for row in rows:
+            table.add_row(list(i for i in row))
+
+        print(table)
+
+        return True
