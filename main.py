@@ -2,14 +2,18 @@ from db import DB
 
 
 help_string = """
-List of commands:
+\tList of commands:
+
 ?\t\tGet list of commands
 create\t\tCreate tables student, rooms and student_room for m2m rel
 drop\t\tDrop all tables
 insert\t\tEnter data from json file to the database
 end\t\tExit from Program
-clear\t\tClear the terminal\n
+clear\t\tClear the terminal
 
+view\t\tViewing of Data
+add\t\tAdding Data
+delete\t\tDelete Data
 """
 
 
@@ -32,7 +36,8 @@ command_dict = {
     'clear': clear,
     '?': print_command_list,
 
-    "view": DB.viewing_data
+    "view": DB.viewing_data,
+    "add": DB.adding_data,
 }
 
 
@@ -44,7 +49,7 @@ try:
         print('Welcome! Enter "?" to see the list of available commands.')
         while True:
 
-            command = input("icode >>> ").lower()
+            command = input("\nicode >>> ").lower()
 
             try:
                 handler = command_dict[command]

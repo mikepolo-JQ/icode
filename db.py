@@ -5,6 +5,7 @@ from prettytable import PrettyTable
 
 import psycopg2
 import conf as settings
+import utils
 
 sql_queries = {
     'create_subject': "create table subject("
@@ -49,7 +50,8 @@ sql_queries = {
 
     "viewing_subject_groups": "select g.id, g.name, array_to_string(array_agg(s.name), ', ') from groups g left join"
                               " subject_groups sg on g.id = sg.group_id left join subject s on sg.subject_id = s.id"
-                              " group by g.name, g.id;"
+                              " group by g.name, g.id;",
+
 }
 
 
@@ -82,7 +84,7 @@ class DB:
             cursor.execute(sql_query)
             self.connection.commit()
 
-    def __fetchall(self, sql_query: str) -> Tuple[Union[dict, list], str]:
+    def _fetchall(self, sql_query: str) -> Tuple[Union[dict, list], str]:
         with self.connection.cursor() as cursor:
             start = time.time()
 
@@ -199,7 +201,7 @@ class DB:
         while True:
             table_name = input("\nicode/view >>> ").lower()
             if table_name in self.tables_names:
-                self._view(table_name)
+                _rows = self._view(table_name)
             elif table_name == "end":
                 break
             else:
@@ -234,12 +236,12 @@ class DB:
         }
 
         sql_query = sql_queries[f'viewing_{table_name}']
-        conf = viewing_settings_dict[table_name]
 
-        rows, tot_time = self.__fetchall(sql_query)
+        rows, tot_time = self._fetchall(sql_query)
 
         table = PrettyTable()
 
+        conf = viewing_settings_dict[table_name]
         table.title = conf["title"]
         table.field_names = conf["field_names"]
 
@@ -248,4 +250,26 @@ class DB:
 
         print(table)
 
+        return rows
+
+    def adding_data(self):
+        print("\nEnter the name of the table, please\n")
+        print("student\t\tADD STUDENTS\ngroups\t\tADD GROUP\nsubject\t\tADD SUBJECTS\n"
+              "teacher\t\tADD TEACHERS\nsubject_groups\tADD GROUPS")
+
+        hendler_adding_dict = {
+            "student": utils.student_adding,
+            "groups": utils.group_adding,
+        }
+
+        while True:
+            table_name = input("\nicode/add >>> ").lower()
+            if table_name in self.tables_names:
+                hendler_adding_dict[table_name](self)
+            elif table_name == "end":
+                break
+            else:
+                print(f"Table with name \"{table_name}\" isn't found.\nTry again or enter \"end\" for exit")
         return True
+
+
