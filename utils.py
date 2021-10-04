@@ -238,7 +238,7 @@ def delete(s, table_name: str) -> None:
 
         print(f"OK! Subject of Group#{group_id} was delete.")
 
-        return 
+        return
 
     while True:
         delete_id = int(input("Enter the id of the item to delete: "))

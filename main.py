@@ -47,7 +47,7 @@ try:
     db_helper = DB()
 
     try:
-        print('Welcome! Enter "?" to see the list of available commands.')
+        print('\nWelcome! Enter "?" to see the list of available commands.')
         while True:
 
             command = input("\nicode >>> ").lower()
