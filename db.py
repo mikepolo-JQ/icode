@@ -16,7 +16,7 @@ sql_queries = {
     'create_teacher': "create table teacher("
                       "id serial primary key,"
                       "full_name varchar(100) not null,"
-                      "subject_id serial references subject(id)"
+                      "subject_id serial references subject(id) on delete cascade"
                       ");",
 
     "create_groups": "create table groups("
@@ -28,13 +28,13 @@ sql_queries = {
                       "id serial primary key,"
                       "full_name varchar(100) not null,"
 
-                      "group_id serial references groups(id) not null"
+                      "group_id serial references groups(id) on delete cascade "
                       ");",
 
     "create_groups_subject": "create table groups_subject("
                              "id serial primary key,"
-                             "subject_id serial references subject(id),"
-                             "group_id serial references groups(id)"
+                             "subject_id serial references subject(id) on delete cascade,"
+                             "group_id serial references groups(id) on delete cascade"
                              ");",
 
     "viewing_student": "select s.id as id, s.full_name, g.name from student s left join groups g on g.id = s.group_id;",
