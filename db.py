@@ -31,7 +31,7 @@ sql_queries = {
                       "group_id serial references groups(id) not null"
                       ");",
 
-    "create_subject_groups": "create table subject_groups("
+    "create_groups_subject": "create table groups_subject("
                              "id serial primary key,"
                              "subject_id serial references subject(id),"
                              "group_id serial references groups(id)"
@@ -48,8 +48,8 @@ sql_queries = {
     "viewing_teacher": "select t.id, t.full_name, s.name from teacher t left join subject s on s.id = t.subject_id"
                        " order by t.id;",
 
-    "viewing_subject_groups": "select g.id, g.name, array_to_string(array_agg(s.name), ', ') from groups g left join"
-                              " subject_groups sg on g.id = sg.group_id left join subject s on sg.subject_id = s.id"
+    "viewing_groups_subject": "select g.id, g.name, array_to_string(array_agg(s.name), ', ') from groups g left join"
+                              " groups_subject sg on g.id = sg.group_id left join subject s on sg.subject_id = s.id"
                               " group by g.name, g.id;",
 
 }
@@ -72,7 +72,7 @@ class DB:
                                       database=settings.DATABASE_NAME)
 
         self.connection = connection
-        self.tables_names = ['subject', 'teacher', 'groups', 'student', "subject_groups"]
+        self.tables_names = ['subject', 'teacher', 'groups', 'student', "groups_subject"]
         print("Successfully connected...")
 
     def __disconnect__(self):
@@ -134,7 +134,7 @@ class DB:
         self.insert_from_json(table_name="subject")
         self.insert_from_json(table_name="teacher")
 
-        self.insert_from_json(table_name="subject_groups")
+        self.insert_from_json(table_name="groups_subject")
         return True
 
     # INSERT data from JSON FILE to the DataBase
@@ -165,11 +165,11 @@ class DB:
                 "value_string": "({}, '{}', {})",
                 "db_field_string": "teacher(id, full_name, subject_id)"
             },
-            "subject_groups": {
-                "file_name": "subject_groups.json",
+            "groups_subject": {
+                "file_name": "groups_subject.json",
                 "file_field_list": ["id", "subject", "group"],
                 "value_string": "({}, {}, {})",
-                "db_field_string": "subject_groups(id, subject_id, group_id)"
+                "db_field_string": "groups_subject(id, subject_id, group_id)"
             },
         }
 
@@ -196,7 +196,7 @@ class DB:
     def viewing_data(self):
         print("\nEnter the name of the table, please\n")
         print("student\t\tLIST OF STUDENTS\ngroups\t\tLIST OF GROUPS\nsubject\t\tLIST OF SUBJECTS\n"
-              "teacher\t\tLIST OF TEACHERS\nsubject_groups\tSUBJECT OF GROUPS")
+              "teacher\t\tLIST OF TEACHERS\ngroups_subject\tSUBJECT OF GROUPS")
 
         while True:
             table_name = input("\nicode/view >>> ").lower()
@@ -228,7 +228,7 @@ class DB:
                 "title": "LIST OF TEACHERS",
                 "field_names": ["id", "Teacher Full Name", "Subject"],
             },
-            "subject_groups": {
+            "groups_subject": {
                 "title": "SUBJECT OF GROUPS",
                 "field_names": ["id", "Group", "Subjects"],
             },
@@ -255,13 +255,14 @@ class DB:
     def adding_data(self):
         print("\nEnter the name of the table, please\n")
         print("student\t\tADD STUDENTS\ngroups\t\tADD GROUP\nsubject\t\tADD SUBJECTS\n"
-              "teacher\t\tADD TEACHERS\nsubject_groups\tADD GROUPS")
+              "teacher\t\tADD TEACHERS\ngroups_subject\tADD SUBJECT FOR A GROUP")
 
         hendler_adding_dict = {
             "student": utils.student_adding,
             "groups": utils.group_adding,
             "subject": utils.subject_adding,
-            "teacher": utils.teacher_adding
+            "teacher": utils.teacher_adding,
+            "groups_subject": utils.groups_subject_adding
         }
 
         while True:

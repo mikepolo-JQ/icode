@@ -139,3 +139,55 @@ def teacher_adding(s) -> int:
 
     print("OK! Teacher added.")
     return row[0][0]
+
+
+def groups_subject_adding(s) -> int:
+    global group_id, subject_id
+    sql_query = "select max(id) from groups_subject;"
+    rows, _tot_time = s._fetchall(sql_query)
+    last_id = rows[0][0]
+
+    _rows = s._view("groups")
+
+    while True:
+        try:
+            inp = input("Enter the group id or enter \"+\" to add new: ")
+
+            if inp == '+':
+                group_id = group_adding(s)
+                break
+
+            group_id = int(inp)
+        except ValueError:
+            print("Check the entered data. I need digit!")
+            continue
+        if group_id > 0:
+            break
+        print("Check the entered data.")
+
+    _row = s._view("subject")
+
+    while True:
+        try:
+            inp = input("Enter the subject id or enter \"+\" to add new: ")
+
+            if inp == '+':
+                subject_id = subject_adding(s)
+                break
+
+            subject_id = int(inp)
+        except ValueError:
+            print("Check the entered data. I need digit!")
+            continue
+        if subject_id > 0:
+            break
+        print("Check the entered data.")
+
+    sql_query = f"insert into groups_subject(id, group_id, subject_id) values ({last_id + 1}, {group_id}, {subject_id})" \
+                f" returning id;"
+
+    row, _tot_time = s._fetchall(sql_query)
+    s.connection.commit()
+
+    print("OK! Subject added to the Group list.")
+    return row[0][0]
