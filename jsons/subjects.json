@@ -1,0 +1,82 @@
+[
+    {
+        "id": 1,
+        "name": "Algebra"
+    },
+    {
+        "id": 2,
+        "name": "Art"
+    },
+    {
+        "id": 3,
+        "name": "Biology"
+    },
+    {
+        "id": 4,
+        "name": "Chemistry"
+    },
+    {
+        "id": 5,
+        "name": "Computer science"
+    },
+    {
+        "id": 6,
+        "name": "English"
+    },
+    {
+        "id": 7,
+        "name": "Foreign language"
+    },
+    {
+        "id": 8,
+        "name": "Geography"
+    },
+    {
+        "id": 9,
+        "name": "Geometry"
+    },
+    {
+        "id": 10,
+        "name": "Health"
+    },
+    {
+        "id": 11,
+        "name": "History"
+    },
+    {
+        "id": 12,
+        "name": "Literature"
+    },
+    {
+        "id": 13,
+        "name": "Mathematics"
+    },
+    {
+        "id": 14,
+        "name": "Music"
+    },
+    {
+        "id": 15,
+        "name": "Pe"
+    },
+    {
+        "id": 16,
+        "name": "Physics"
+    },
+    {
+        "id": 17,
+        "name": "Psychology"
+    },
+    {
+        "id": 18,
+        "name": "Reading"
+    },
+    {
+        "id": 19,
+        "name": "Science"
+    },
+    {
+        "id": 20,
+        "name": "Social studies"
+    }
+]
