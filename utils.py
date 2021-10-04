@@ -1,3 +1,6 @@
+from prettytable import PrettyTable
+
+
 def student_adding(s) -> int:
     sql_query = "select max(id) from student;"
     rows, _tot_time = s._fetchall(sql_query)
@@ -191,3 +194,60 @@ def groups_subject_adding(s) -> int:
 
     print("OK! Subject added to the Group list.")
     return row[0][0]
+
+
+def delete(s, table_name: str) -> None:
+    rows = s._view(table_name)
+
+    ids_list = list()
+    for row in rows:
+        ids_list.append(row[0])
+
+    if table_name == "groups_subject":
+        while True:
+            group_id = int(input("Enter the id of the group to delete it's subject: "))
+            if group_id in ids_list:
+                break
+            print(f"Check the entered data. Item with id = {group_id} isn't found.")
+
+        sql_query = f"select s.id, s.name from subject s left join groups_subject gs on s.id = gs.subject_id " \
+                    f"where gs.group_id = {group_id};"
+        rows, _total_time = s._fetchall(sql_query)
+
+        table = PrettyTable()
+
+        table.title = "Subjects of the Groups"
+        table.field_names = ["id", "name"]
+
+        ids_list = list()
+        for row in rows:
+            table.add_row(list(i for i in row))
+            ids_list.append(row[0])
+
+        print(table)
+
+        while True:
+            subject_id = int(input("Enter the id of the subject to delete: "))
+            if subject_id in ids_list:
+                break
+            print(f"Check the entered data. Item with id = {subject_id} isn't found.")
+
+        sql_query = f"delete from {table_name} where group_id={group_id} and subject_id={subject_id};"
+
+        s._execute_and_commit(sql_query)
+
+        print(f"OK! Subject of Group#{group_id} was delete.")
+
+        return
+
+    while True:
+        delete_id = int(input("Enter the id of the item to delete: "))
+        if delete_id in ids_list:
+            break
+        print(f"Check the entered data. Item with id = {delete_id} isn't found.")
+
+    sql_query = f"delete from {table_name} where id={delete_id};"
+
+    s._execute_and_commit(sql_query)
+
+    print(f"OK! {table_name.title()} was delete.")
