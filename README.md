@@ -1,4 +1,4 @@
-# icode
+# Psycopg2
 
 # Installation
 
