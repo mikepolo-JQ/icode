@@ -38,6 +38,7 @@ command_dict = {
 
     "view": DB.viewing_data,
     "add": DB.adding_data,
+    "delete": DB.delete_data,
 }
 
 

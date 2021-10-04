@@ -79,7 +79,7 @@ class DB:
         self.connection.close()
         print('Connection close...')
 
-    def __execute_and_commit(self, sql_query: str) -> None:
+    def _execute_and_commit(self, sql_query: str) -> None:
         with self.connection.cursor() as cursor:
             cursor.execute(sql_query)
             self.connection.commit()
@@ -101,7 +101,7 @@ class DB:
 
         for table_name in tables_names:
             sql_query = sql_queries[f'create_{table_name}']
-            self.__execute_and_commit(sql_query)
+            self._execute_and_commit(sql_query)
 
             print(f"Table {table_name} created successfully")
 
@@ -119,7 +119,7 @@ class DB:
                 tables_names = self.tables_names
 
                 for table_name in tables_names:
-                    self.__execute_and_commit(f"DROP TABLE {table_name} CASCADE;")
+                    self._execute_and_commit(f"DROP TABLE {table_name} CASCADE;")
                     print(f"Table {table_name} drop successfully")
 
                 return True
@@ -188,7 +188,7 @@ class DB:
             if someone['id'] != data[-1]['id']:
                 values += ', '
 
-        self.__execute_and_commit(f"insert into {conf['db_field_string']} values " + values + ';')
+        self._execute_and_commit(f"insert into {conf['db_field_string']} values " + values + ';')
 
         finish = time.time()
         print(f"Insert {table_name} successfully! Total time: {finish - start:.2f}")
@@ -269,6 +269,21 @@ class DB:
             table_name = input("\nicode/add >>> ").lower()
             if table_name in self.tables_names:
                 hendler_adding_dict[table_name](self)
+            elif table_name == "end":
+                break
+            else:
+                print(f"Table with name \"{table_name}\" isn't found.\nTry again or enter \"end\" for exit")
+        return True
+
+    def delete_data(self):
+        print("\nEnter the name of the table, please\n")
+        print("student\t\tDelete STUDENTS\ngroups\t\tDelete GROUP\nsubject\t\tDelete SUBJECTS\n"
+              "teacher\t\tDelete TEACHERS\ngroups_subject\tDelete SUBJECT FOR A GROUP")
+
+        while True:
+            table_name = input("\nicode/delete >>> ").lower()
+            if table_name in self.tables_names:
+                utils.delete(self, table_name)
             elif table_name == "end":
                 break
             else:

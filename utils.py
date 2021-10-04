@@ -191,3 +191,23 @@ def groups_subject_adding(s) -> int:
 
     print("OK! Subject added to the Group list.")
     return row[0][0]
+
+
+def delete(s, table_name: str) -> None:
+    rows = s._view(table_name)
+
+    ids_list = list()
+    for row in rows:
+        ids_list.append(row[0])
+
+    while True:
+        delete_id = int(input("Enter the id of the item to delete: "))
+        if delete_id in ids_list:
+            break
+        print(f"Check the entered data. Item with id = {delete_id} isn't found.")
+
+    sql_query = f"delete from {table_name} where id={delete_id};"
+
+    s._execute_and_commit(sql_query)
+
+    print(f"OK! {table_name.title()} was delete.")
